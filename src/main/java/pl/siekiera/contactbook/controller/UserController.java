@@ -14,7 +14,7 @@ import pl.siekiera.contactbook.service.authentication.AuthenticationService;
 import javax.validation.Valid;
 import java.util.Optional;
 
-@RestController("/user")
+@RestController
 @RequiredArgsConstructor
 public class UserController {
 
