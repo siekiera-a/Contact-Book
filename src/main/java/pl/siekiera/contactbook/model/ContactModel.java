@@ -11,11 +11,13 @@ public class ContactModel {
     Long id;
     String email;
     String phone;
+    String name;
 
     public ContactModel(Contact contact) {
         id = contact.getId();
         email = contact.getEmail();
         phone = contact.getPhone();
+        name = contact.getName();
     }
 
 }

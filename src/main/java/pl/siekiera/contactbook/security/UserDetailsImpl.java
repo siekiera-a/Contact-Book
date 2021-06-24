@@ -1,6 +1,7 @@
 package pl.siekiera.contactbook.security;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import pl.siekiera.contactbook.entity.User;
@@ -9,6 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 @AllArgsConstructor
+@Getter
 public class UserDetailsImpl implements UserDetails {
 
     private final User user;

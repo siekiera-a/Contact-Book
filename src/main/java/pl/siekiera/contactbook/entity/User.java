@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "app_user")
@@ -35,11 +36,16 @@ public class User {
     Timestamp creationTime;
 
     @OneToMany(mappedBy = "user")
-    List<Contact> contacts;
+    List<Contact> contacts = new ArrayList<>();
 
     public User(String email, String name, String password) {
         this.email = email;
         this.name = name;
         this.password = password;
     }
+
+    public void addContact(Contact contact) {
+        contacts.add(contact);
+    }
+
 }
