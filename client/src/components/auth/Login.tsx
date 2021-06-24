@@ -1,5 +1,15 @@
-import { Button, FormControl, makeStyles, TextField } from '@material-ui/core';
-import React, { useCallback, useRef } from 'react';
+import { Typography } from '@material-ui/core';
+import {
+  Button,
+  CircularProgress,
+  FormControl,
+  makeStyles,
+  TextField,
+} from '@material-ui/core';
+import React, { useCallback, useRef, useState } from 'react';
+import { useContext } from 'react';
+import { signInApi } from '../../api/auth';
+import { appContext } from '../../AppContext';
 
 interface IProps {
   className?: string;
@@ -15,28 +25,54 @@ const useStyles = makeStyles({
       marginBottom: '0',
     },
   },
+  spinner: {
+    margin: '15px auto',
+  },
 });
 
 export function Login({ className, redirectWindow }: IProps) {
   const classes = useStyles();
-  const loginRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<string>();
 
-  const handleSubmit = useCallback((e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const { signIn, httpClient } = useContext(appContext);
 
-    const login = loginRef.current?.value || '';
-    const password = passwordRef.current?.value || '';
+  const handleSubmit = useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
 
-    if (loginRef.current) {
-      loginRef.current.value = '';
-    }
-  }, []);
+      const email = emailRef.current?.value || '';
+      const password = passwordRef.current?.value || '';
+
+      if (email.length === 0) {
+        setMessage('Email can not be empty!');
+        return;
+      }
+
+      if (password.length === 0) {
+        setMessage('Password can not be empty!');
+        return;
+      }
+
+      setLoading(true);
+      setMessage(undefined);
+
+      signInApi(httpClient, { email, password })
+        .then((x) => signIn(x))
+        .catch(() => {
+          setLoading(false);
+          setMessage('Login failed!');
+        });
+    },
+    [httpClient, setLoading, signIn, setMessage]
+  );
 
   return (
     <form onSubmit={handleSubmit} className={className}>
       <FormControl fullWidth className={classes.formControl}>
-        <TextField label="Login" variant="outlined" inputRef={loginRef} />
+        <TextField label="Email" variant="outlined" inputRef={emailRef} />
         <TextField
           label="Password"
           variant="outlined"
@@ -49,6 +85,12 @@ export function Login({ className, redirectWindow }: IProps) {
         <Button variant="outlined" onClick={redirectWindow}>
           Register
         </Button>
+        {message && (
+          <Typography align="center" color="error">
+            {message}
+          </Typography>
+        )}
+        {loading && <CircularProgress className={classes.spinner} />}
       </FormControl>
     </form>
   );
