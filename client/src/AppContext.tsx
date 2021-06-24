@@ -1,12 +1,11 @@
-import React, { createContext, useState } from 'react';
-import { useCallback } from 'react';
-import { signInApi } from './api/auth';
+import React, { createContext, useCallback, useState } from 'react';
 import { HttpClient } from './api/client';
-import { IAuthResponse, IContact, ISignInRequest } from './api/types';
+import { IAuthResponse, IContact, ISignInRequest, IUser } from './api/types';
 
 interface IAppContext {
-  signIn(data: IAuthResponse): void;
+  signIn(data: IAuthResponse, credentials: ISignInRequest): void;
   httpClient: HttpClient;
+  loggedIn: boolean;
 }
 
 interface IAppContextProps {
@@ -14,8 +13,9 @@ interface IAppContextProps {
 }
 
 const defaultValue: IAppContext = {
-  signIn: (data: IAuthResponse) => void 0,
+  signIn: (data: IAuthResponse, credentials: ISignInRequest) => void 0,
   httpClient: new HttpClient('', ''),
+  loggedIn: false,
 };
 
 export const appContext = createContext<IAppContext>(defaultValue);
@@ -27,13 +27,22 @@ export function AppContextProvider({ children }: IAppContextProps) {
     new HttpClient('', '')
   );
   const [contacts, setContacts] = useState<IContact[]>([]);
+  const [me, setMe] = useState<IUser>();
 
   const signIn = useCallback(
-    (data: IAuthResponse) => {
+    (data: IAuthResponse, credentials: ISignInRequest) => {
       setContacts(data.contacts);
+      setMe(data.user);
+
+      const { email, password } = credentials;
+      setHttpClient(new HttpClient(email, password));
     },
-    [httpClient, setContacts]
+    [setContacts, setMe, setHttpClient]
   );
 
-  return <Provider value={{ signIn, httpClient }}>{children}</Provider>;
+  return (
+    <Provider value={{ signIn, httpClient, loggedIn: me !== undefined }}>
+      {children}
+    </Provider>
+  );
 }

@@ -59,8 +59,10 @@ export function Login({ className, redirectWindow }: IProps) {
       setLoading(true);
       setMessage(undefined);
 
-      signInApi(httpClient, { email, password })
-        .then((x) => signIn(x))
+      const credentials = { email, password };
+
+      signInApi(httpClient, credentials)
+        .then((x) => signIn(x, credentials))
         .catch(() => {
           setLoading(false);
           setMessage('Login failed!');

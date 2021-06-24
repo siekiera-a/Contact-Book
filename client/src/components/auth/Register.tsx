@@ -76,8 +76,10 @@ export function Register({ className, redirectWindow }: IProps) {
       setMessage(undefined);
       setLoading(true);
 
-      signUpApi(httpClient, { email, name, password })
-        .then((x) => signIn(x))
+      const credentials = { email, name, password };
+
+      signUpApi(httpClient, credentials)
+        .then((x) => signIn(x, credentials))
         .catch(() => {
           setLoading(false);
           setMessage('Registration failed!');
