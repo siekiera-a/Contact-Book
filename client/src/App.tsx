@@ -1,14 +1,12 @@
 import React from 'react';
 import { AppContextProvider } from './AppContext';
-import { AuthView } from './components/auth/AuthView';
+import { AppView } from './components/AppView';
 
 function App() {
   return (
-    <div className="App">
-      <AppContextProvider>
-        <AuthView />
-      </AppContextProvider>
-    </div>
+    <AppContextProvider>
+      <AppView />
+    </AppContextProvider>
   );
 }
 
