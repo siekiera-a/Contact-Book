@@ -28,7 +28,10 @@ export class HttpClient {
     return this.send(url, 'PUT', data, requireAuthorization);
   }
 
-  public async delete<T>(url: string, requireAuthorization: boolean = true) {
+  public async delete<T>(
+    url: string,
+    requireAuthorization: boolean = true
+  ): Promise<T> {
     return this.send(url, 'DELETE', undefined, requireAuthorization);
   }
 
