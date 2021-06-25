@@ -1,5 +1,6 @@
 import { Box, FormControl, makeStyles, TextField } from '@material-ui/core';
-import React from 'react';
+import React, { useState } from 'react';
+import { useCallback } from 'react';
 import { useRef } from 'react';
 
 const useStyles = makeStyles({
@@ -36,6 +37,30 @@ export function ContactEdit({
   phoneRef,
 }: IProps) {
   const classes = useStyles();
+  const [namePlaceholder, setNamePlaceholder] = useState(name || '');
+  const [emailPlaceholder, setEmailPlaceholder] = useState(email || '');
+  const [phonePlaceholder, setPhonePlaceholder] = useState(phone || '');
+
+  const onNameChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setNamePlaceholder(e.target.value);
+    },
+    [setNamePlaceholder]
+  );
+
+  const onEmailChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setEmailPlaceholder(e.target.value);
+    },
+    [setEmailPlaceholder]
+  );
+
+  const onPhoneChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setPhonePlaceholder(e.target.value);
+    },
+    [setPhonePlaceholder]
+  );
 
   return (
     <Box className={[className || '', classes.paddingVertical].join(' ')}>
@@ -43,20 +68,23 @@ export function ContactEdit({
         <TextField
           variant="outlined"
           label="Name"
-          value={name}
+          value={namePlaceholder}
           inputRef={nameRef}
+          onChange={onNameChange}
         />
         <TextField
           variant="outlined"
           label="Email"
-          value={email || ''}
+          value={emailPlaceholder}
           inputRef={emailRef}
+          onChange={onEmailChange}
         />
         <TextField
           variant="outlined"
           label="Phone"
-          value={phone || ''}
+          value={phonePlaceholder}
           inputRef={phoneRef}
+          onChange={onPhoneChange}
         />
       </FormControl>
     </Box>
