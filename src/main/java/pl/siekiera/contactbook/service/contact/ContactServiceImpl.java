@@ -33,6 +33,7 @@ public class ContactServiceImpl implements ContactService {
 
         Contact contact = new Contact(name, email, phone);
         user.addContact(contact);
+        contactRepository.save(contact);
         userRepository.save(user);
         return true;
     }
