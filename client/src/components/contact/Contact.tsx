@@ -6,12 +6,14 @@ import {
   Paper,
   Typography,
 } from '@material-ui/core';
+import CheckIcon from '@material-ui/icons/Check';
+import CloseIcon from '@material-ui/icons/Close';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import EmailIcon from '@material-ui/icons/Email';
-import PhoneIcon from '@material-ui/icons/Phone';
-import React from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { IContact } from '../../api/types';
+import { ContactContent } from './ContactContent';
+import { ContactEdit } from './ContactEdit';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -19,15 +21,6 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'row',
     margin: '5px',
-  },
-  contactItem: {
-    display: 'flex',
-    flexDirection: 'row',
-    padding: '10px',
-    alignItems: 'center',
-  },
-  icon: {
-    marginRight: '10px',
   },
   actionBar: {
     display: 'flex',
@@ -64,6 +57,7 @@ const useStyles = makeStyles((theme) => ({
 export function Contact({ name, email, phone }: IContact) {
   const classes = useStyles();
   const upperCaseName = name.toUpperCase();
+  const [editable, setEditable] = useState(false);
 
   let avatarTitle = '';
   const words = upperCaseName.split(' ');
@@ -75,6 +69,20 @@ export function Contact({ name, email, phone }: IContact) {
       upperCaseName.length > 1 ? upperCaseName.substr(0, 2) : upperCaseName;
   }
 
+  const toggleEditing = useCallback(() => {
+    setEditable((v) => !v);
+  }, [setEditable]);
+
+  const nameRef = useRef<HTMLInputElement>();
+  const emailRef = useRef<HTMLInputElement>();
+  const phoneRef = useRef<HTMLInputElement>();
+
+  const updateContact = useCallback(() => {
+    const name = nameRef.current?.value || '';
+    const email = emailRef.current?.value || '';
+    const phone = phoneRef.current?.value || '';
+  }, []);
+
   return (
     <Paper className={classes.container}>
       <Box className={classes.avatarContainer}>
@@ -84,24 +92,33 @@ export function Contact({ name, email, phone }: IContact) {
         <Typography variant="h5" className={classes.title}>
           {name}
         </Typography>
-        <Box className={classes.info}>
-          {email && (
-            <Box className={classes.contactItem}>
-              <EmailIcon className={classes.icon} />
-              <Typography variant="h6">{email}</Typography>
-            </Box>
-          )}
-          {phone && (
-            <Box className={classes.contactItem}>
-              <PhoneIcon className={classes.icon} />
-              <Typography variant="h6">{phone}</Typography>
-            </Box>
-          )}
-        </Box>
+        {editable ? (
+          <ContactEdit
+            email={email}
+            phone={phone}
+            name={name}
+            className={classes.info}
+            nameRef={nameRef}
+            emailRef={emailRef}
+            phoneRef={phoneRef}
+          />
+        ) : (
+          <ContactContent
+            email={email}
+            phone={phone}
+            className={classes.info}
+          />
+        )}
+
         <Box className={[classes.actionBar].join(' ')}>
-          <IconButton>
-            <EditIcon />
+          <IconButton onClick={toggleEditing}>
+            {editable ? <CloseIcon /> : <EditIcon />}
           </IconButton>
+          {editable && (
+            <IconButton onClick={updateContact}>
+              <CheckIcon />
+            </IconButton>
+          )}
           <IconButton>
             <DeleteIcon />
           </IconButton>
