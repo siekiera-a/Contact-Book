@@ -17,9 +17,9 @@ const useStyles = makeStyles({
 });
 
 interface IProps {
-  email: string | null;
-  phone: string | null;
-  name: string;
+  email?: string | null;
+  phone?: string | null;
+  name?: string;
   className?: string;
   nameRef: React.MutableRefObject<HTMLInputElement | undefined>;
   emailRef: React.MutableRefObject<HTMLInputElement | undefined>;
