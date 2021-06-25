@@ -7,6 +7,7 @@ import pl.siekiera.contactbook.entity.User;
 import pl.siekiera.contactbook.model.ContactModel;
 import pl.siekiera.contactbook.repository.ContactRepository;
 import pl.siekiera.contactbook.repository.UserRepository;
+import pl.siekiera.contactbook.service.validation.ConstraintsValidator;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -19,11 +20,14 @@ public class ContactServiceImpl implements ContactService {
 
     private final ContactRepository contactRepository;
     private final UserRepository userRepository;
+    private final ConstraintsValidator constraintsValidator;
 
     @Override
     @Transactional
     public boolean add(User user, String name, String email, String phone) {
-        if (email == null && phone == null) {
+        if (!constraintsValidator.validEmail(email) ||
+            !constraintsValidator.validPhoneNumber(phone) ||
+            !constraintsValidator.validName(name)) {
             return false;
         }
 
@@ -48,7 +52,7 @@ public class ContactServiceImpl implements ContactService {
     @Override
     @Transactional
     public boolean deleteContact(User user, Long contactId) {
-        Optional<Contact> contactOptional =  contactRepository.findById(contactId);
+        Optional<Contact> contactOptional = contactRepository.findById(contactId);
 
         if (contactOptional.isEmpty()) {
             return false;
@@ -68,6 +72,13 @@ public class ContactServiceImpl implements ContactService {
     @Override
     @Transactional
     public boolean updateContact(User user, Long id, String name, String email, String phone) {
+        if (!constraintsValidator.validEmail(email) ||
+            !constraintsValidator.validPhoneNumber(phone) ||
+            !constraintsValidator.validName(name)) {
+            return false;
+        }
+
+
         Optional<Contact> optionalContact = contactRepository.findById(id);
 
         if (optionalContact.isEmpty()) {
@@ -84,15 +95,11 @@ public class ContactServiceImpl implements ContactService {
             return false;
         }
 
-        if (name != null && (email != null || phone != null)) {
-            contact.setEmail(email);
-            contact.setPhone(phone);
-            contact.setName(name);
-            contactRepository.save(contact);
-            return true;
-        }
-
-        return false;
+        contact.setEmail(email);
+        contact.setPhone(phone);
+        contact.setName(name);
+        contactRepository.save(contact);
+        return true;
     }
 
 
