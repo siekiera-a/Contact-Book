@@ -9,6 +9,7 @@ interface IAppContext {
   contacts: IContact[];
   setContacts(contacts: IContact[]): void;
   deleteContact(id: number): void;
+  updateContact(contact: IContact): void;
 }
 
 interface IAppContextProps {
@@ -22,6 +23,7 @@ const defaultValue: IAppContext = {
   contacts: [],
   setContacts: (contacts: IContact[]) => void 0,
   deleteContact: (id: number) => void 0,
+  updateContact: (contact: IContact) => void 0,
 };
 
 export const appContext = createContext<IAppContext>(defaultValue);
@@ -53,6 +55,20 @@ export function AppContextProvider({ children }: IAppContextProps) {
     [setContacts]
   );
 
+  const updateContact = useCallback(
+    (contact: IContact) => {
+      setContacts((c) => {
+        const index = c.findIndex((x) => x.id === contact.id);
+        if (index === -1) {
+          return c;
+        }
+        c.splice(index, 1, contact);
+        return [...c];
+      });
+    },
+    [setContacts]
+  );
+
   return (
     <Provider
       value={{
@@ -62,6 +78,7 @@ export function AppContextProvider({ children }: IAppContextProps) {
         contacts,
         setContacts,
         deleteContact,
+        updateContact,
       }}
     >
       {children}

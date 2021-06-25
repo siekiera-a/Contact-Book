@@ -1,4 +1,4 @@
-import { Fab, makeStyles, Modal } from '@material-ui/core';
+import { Box, Fab, makeStyles, Modal } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import React, { useCallback, useState } from 'react';
 import { ContactCreator } from './ContactCreator';
@@ -24,7 +24,9 @@ export function ContactBook() {
     <>
       <ContactsList />
       <Modal open={creatorOpened} onClose={toggleContactCreator}>
-        <ContactCreator close={toggleContactCreator} />
+        <Box>
+          <ContactCreator close={toggleContactCreator} />
+        </Box>
       </Modal>
       <Fab
         color="primary"

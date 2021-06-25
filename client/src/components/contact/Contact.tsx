@@ -11,7 +11,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import React, { useCallback, useContext, useRef, useState } from 'react';
-import { deleteContactApi } from '../../api/contact';
+import { deleteContactApi, editContactApi } from '../../api/contact';
 import { IContact } from '../../api/types';
 import { appContext } from '../../AppContext';
 import { ContactContent } from './ContactContent';
@@ -56,11 +56,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export function Contact({ name, email, phone, id }: IContact) {
+export function Contact({ id, name, phone, email }: IContact) {
   const classes = useStyles();
   const upperCaseName = name.toUpperCase();
   const [editable, setEditable] = useState(false);
-  const { httpClient, deleteContact } = useContext(appContext);
+  const { httpClient, deleteContact, updateContact } = useContext(appContext);
 
   let avatarTitle = '';
   const words = upperCaseName.split(' ');
@@ -80,11 +80,22 @@ export function Contact({ name, email, phone, id }: IContact) {
   const emailRef = useRef<HTMLInputElement>();
   const phoneRef = useRef<HTMLInputElement>();
 
-  const updateContact = useCallback(() => {
+  const editContact = useCallback(() => {
     const name = nameRef.current?.value || '';
     const email = emailRef.current?.value || '';
     const phone = phoneRef.current?.value || '';
-  }, []);
+
+    if (name === '' || (email === '' && phone === '')) {
+      return;
+    }
+
+    editContactApi(httpClient, { name, email, phone }, id).then((x) => {
+      if (x.success) {
+        updateContact({ name, email, phone, id });
+        setEditable(false);
+      }
+    });
+  }, [id, httpClient, setEditable, updateContact]);
 
   const removeContact = useCallback(() => {
     deleteContactApi(httpClient, id).then((x) => {
@@ -126,7 +137,7 @@ export function Contact({ name, email, phone, id }: IContact) {
             {editable ? <CloseIcon /> : <EditIcon />}
           </IconButton>
           {editable && (
-            <IconButton onClick={updateContact}>
+            <IconButton onClick={editContact}>
               <CheckIcon />
             </IconButton>
           )}

@@ -9,8 +9,16 @@ export const addContactApi = async (
 };
 
 export const deleteContactApi = async (
-  HttpClient: HttpClient,
+  httpClient: HttpClient,
   id: number
 ): Promise<ISuccessResponse> => {
-  return HttpClient.delete(`/contact/${id}`);
+  return httpClient.delete(`/contact/${id}`);
+};
+
+export const editContactApi = async (
+  httpClient: HttpClient,
+  contact: IContactRequest,
+  id: number
+): Promise<ISuccessResponse> => {
+  return httpClient.put(`/contact/${id}`, contact);
 };
