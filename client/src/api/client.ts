@@ -79,7 +79,7 @@ export class HttpClient {
   }
 
   private authorizationHeaders() {
-    if (this.username.length === 0 || this.password.length) {
+    if (this.username.length === 0 || this.password.length === 0) {
       throw new Error('User not logged in!');
     }
 
