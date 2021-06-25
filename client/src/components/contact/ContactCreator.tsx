@@ -1,6 +1,7 @@
 import { Button, makeStyles, Paper, Typography } from '@material-ui/core';
-import React, { useCallback, useContext, useRef } from 'react';
+import React, { useCallback, useContext, useRef, useState } from 'react';
 import { addContactApi } from '../../api/contact';
+import { IError } from '../../api/error';
 import { appContext } from '../../AppContext';
 import { ContactEdit } from './ContactEdit';
 
@@ -32,6 +33,9 @@ const useStyles = makeStyles({
     width: '150px',
     margin: 'auto',
   },
+  message: {
+    marginTop: '15px',
+  },
 });
 
 interface IProps {
@@ -42,6 +46,8 @@ export function ContactCreator({ close }: IProps) {
   const nameRef = useRef<HTMLInputElement>();
   const emailRef = useRef<HTMLInputElement>();
   const phoneRef = useRef<HTMLInputElement>();
+
+  const [message, setMessage] = useState<string>();
 
   const classes = useStyles();
 
@@ -55,6 +61,8 @@ export function ContactCreator({ close }: IProps) {
     if (name === '' || (email === '' && phone === '')) {
       return;
     }
+
+    setMessage(undefined);
 
     addContactApi(httpClient, {
       name,
@@ -75,8 +83,14 @@ export function ContactCreator({ close }: IProps) {
           phoneRef.current.value = '';
         }
       })
-      .catch((e) => alert(e));
-  }, [httpClient, close, setContacts]);
+      .catch((e: IError) => {
+        let message =
+          e.status === 400
+            ? 'Name can not be blank'
+            : 'Contact with given name already exists!';
+        setMessage(message);
+      });
+  }, [httpClient, close, setContacts, setMessage]);
 
   return (
     <Paper className={classes.paper}>
@@ -97,6 +111,11 @@ export function ContactCreator({ close }: IProps) {
       >
         Add
       </Button>
+      {message && (
+        <Typography color="error" align="center" className={classes.message}>
+          {message}
+        </Typography>
+      )}
     </Paper>
   );
 }

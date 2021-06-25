@@ -29,3 +29,7 @@ export interface IContactRequest {
   email?: string;
   phone?: string;
 }
+
+export interface ISuccessResponse {
+  success: boolean;
+}

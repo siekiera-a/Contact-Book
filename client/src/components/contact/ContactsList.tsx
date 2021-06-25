@@ -10,6 +10,10 @@ const useStyles = makeStyles({
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
+    margin: '50px auto',
+  },
+  text: {
+    margin: 'auto',
   },
 });
 
@@ -22,7 +26,9 @@ export function ContactsList() {
       {contacts.length > 0 ? (
         contacts.map((c) => <Contact key={c.id} {...c} />)
       ) : (
-        <Typography align="center">No contacts</Typography>
+        <Typography align="center" variant="h4" className={classes.text}>
+          No contacts
+        </Typography>
       )}
     </Container>
   );

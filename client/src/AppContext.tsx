@@ -8,6 +8,7 @@ interface IAppContext {
   loggedIn: boolean;
   contacts: IContact[];
   setContacts(contacts: IContact[]): void;
+  deleteContact(id: number): void;
 }
 
 interface IAppContextProps {
@@ -20,6 +21,7 @@ const defaultValue: IAppContext = {
   loggedIn: false,
   contacts: [],
   setContacts: (contacts: IContact[]) => void 0,
+  deleteContact: (id: number) => void 0,
 };
 
 export const appContext = createContext<IAppContext>(defaultValue);
@@ -44,6 +46,13 @@ export function AppContextProvider({ children }: IAppContextProps) {
     [setContacts, setMe, setHttpClient]
   );
 
+  const deleteContact = useCallback(
+    (id: number) => {
+      setContacts((s) => s.filter((e) => e.id !== id));
+    },
+    [setContacts]
+  );
+
   return (
     <Provider
       value={{
@@ -52,6 +61,7 @@ export function AppContextProvider({ children }: IAppContextProps) {
         loggedIn: me !== undefined,
         contacts,
         setContacts,
+        deleteContact,
       }}
     >
       {children}

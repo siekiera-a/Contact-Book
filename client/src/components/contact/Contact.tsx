@@ -10,8 +10,10 @@ import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useContext, useRef, useState } from 'react';
+import { deleteContactApi } from '../../api/contact';
 import { IContact } from '../../api/types';
+import { appContext } from '../../AppContext';
 import { ContactContent } from './ContactContent';
 import { ContactEdit } from './ContactEdit';
 
@@ -54,10 +56,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export function Contact({ name, email, phone }: IContact) {
+export function Contact({ name, email, phone, id }: IContact) {
   const classes = useStyles();
   const upperCaseName = name.toUpperCase();
   const [editable, setEditable] = useState(false);
+  const { httpClient, deleteContact } = useContext(appContext);
 
   let avatarTitle = '';
   const words = upperCaseName.split(' ');
@@ -82,6 +85,14 @@ export function Contact({ name, email, phone }: IContact) {
     const email = emailRef.current?.value || '';
     const phone = phoneRef.current?.value || '';
   }, []);
+
+  const removeContact = useCallback(() => {
+    deleteContactApi(httpClient, id).then((x) => {
+      if (x.success) {
+        deleteContact(id);
+      }
+    });
+  }, [id, httpClient, deleteContact]);
 
   return (
     <Paper className={classes.container}>
@@ -119,7 +130,7 @@ export function Contact({ name, email, phone }: IContact) {
               <CheckIcon />
             </IconButton>
           )}
-          <IconButton>
+          <IconButton onClick={removeContact}>
             <DeleteIcon />
           </IconButton>
         </Box>
