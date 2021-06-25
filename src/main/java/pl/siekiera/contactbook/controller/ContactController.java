@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -51,6 +52,14 @@ public class ContactController {
         User user = authenticationService.getCurrentUser();
         return new ResponseEntity<>(new SuccessResponse(contactService.deleteContact(user, id)),
             HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<SuccessResponse> updateContact(@Valid @RequestBody ContactRequest contact, @PathVariable Long id) {
+        User user = authenticationService.getCurrentUser();
+        boolean success = contactService.updateContact(user, id, contact.getName(),
+            contact.getEmail(), contact.getPhone());
+        return new ResponseEntity<>(new SuccessResponse(success), HttpStatus.OK);
     }
 
 }

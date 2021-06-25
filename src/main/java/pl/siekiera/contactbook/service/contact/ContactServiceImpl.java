@@ -65,4 +65,35 @@ public class ContactServiceImpl implements ContactService {
         return false;
     }
 
+    @Override
+    @Transactional
+    public boolean updateContact(User user, Long id, String name, String email, String phone) {
+        Optional<Contact> optionalContact = contactRepository.findById(id);
+
+        if (optionalContact.isEmpty()) {
+            return false;
+        }
+
+        Contact contact = optionalContact.get();
+
+        if (!user.equals(contact.getUser())) {
+            return false;
+        }
+
+        if (contactRepository.existsContactByNameAndUser(name, user)) {
+            return false;
+        }
+
+        if (name != null && (email != null || phone != null)) {
+            contact.setEmail(email);
+            contact.setPhone(phone);
+            contact.setName(name);
+            contactRepository.save(contact);
+            return true;
+        }
+
+        return false;
+    }
+
+
 }
