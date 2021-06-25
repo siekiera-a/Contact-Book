@@ -3,6 +3,8 @@ package pl.siekiera.contactbook.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,11 +21,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/contact")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class ContactController {
 
     private final ContactService contactService;
     private final AuthenticationService authenticationService;
 
+    @PostMapping("/add")
     public ResponseEntity<List<ContactModel>> add(@Valid @RequestBody ContactRequest contact) {
         User user = authenticationService.getCurrentUser();
         String name = contact.getName();

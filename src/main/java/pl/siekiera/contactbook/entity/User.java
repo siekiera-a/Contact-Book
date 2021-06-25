@@ -2,10 +2,13 @@ package pl.siekiera.contactbook.entity;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -35,7 +38,8 @@ public class User {
     @CreationTimestamp
     Timestamp creationTime;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
+    @ToString.Exclude
     List<Contact> contacts = new ArrayList<>();
 
     public User(String email, String name, String password) {
@@ -46,6 +50,7 @@ public class User {
 
     public void addContact(Contact contact) {
         contacts.add(contact);
+        contact.setUser(this);
     }
 
 }
