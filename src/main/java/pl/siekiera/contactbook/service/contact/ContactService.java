@@ -11,4 +11,6 @@ public interface ContactService {
 
     List<ContactModel> getContacts(User user);
 
+    boolean deleteContact(User user, Long contactId);
+
 }

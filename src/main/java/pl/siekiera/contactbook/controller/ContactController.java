@@ -4,12 +4,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import pl.siekiera.contactbook.dto.request.ContactRequest;
+import pl.siekiera.contactbook.dto.response.SuccessResponse;
 import pl.siekiera.contactbook.entity.User;
 import pl.siekiera.contactbook.model.ContactModel;
 import pl.siekiera.contactbook.service.authentication.AuthenticationService;
@@ -41,6 +44,13 @@ public class ContactController {
         }
 
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<SuccessResponse> deleteContact(@PathVariable Long id) {
+        User user = authenticationService.getCurrentUser();
+        return new ResponseEntity<>(new SuccessResponse(contactService.deleteContact(user, id)),
+            HttpStatus.OK);
     }
 
 }

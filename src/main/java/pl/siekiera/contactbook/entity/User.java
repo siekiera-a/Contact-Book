@@ -1,6 +1,7 @@
 package pl.siekiera.contactbook.entity;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
@@ -40,6 +41,7 @@ public class User {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     List<Contact> contacts = new ArrayList<>();
 
     public User(String email, String name, String password) {
@@ -51,6 +53,10 @@ public class User {
     public void addContact(Contact contact) {
         contacts.add(contact);
         contact.setUser(this);
+    }
+
+    public void deleteContact(Contact contact) {
+        contacts.remove(contact);
     }
 
 }
