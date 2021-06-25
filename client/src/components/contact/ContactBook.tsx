@@ -1,6 +1,8 @@
-import { Box, Fab, makeStyles, Modal } from '@material-ui/core';
+import { Box, Fab, IconButton, makeStyles, Modal } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
-import React, { useCallback, useState } from 'react';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import React, { useCallback, useContext, useState } from 'react';
+import { appContext } from '../../AppContext';
 import { ContactCreator } from './ContactCreator';
 import { ContactsList } from './ContactsList';
 
@@ -10,11 +12,17 @@ const useStyles = makeStyles({
     right: '30px',
     bottom: '30px',
   },
+  logoutButton: {
+    position: 'fixed',
+    right: '30px',
+    top: '30px',
+  },
 });
 
 export function ContactBook() {
   const classes = useStyles();
   const [creatorOpened, setCreatorOpened] = useState(false);
+  const { signOut } = useContext(appContext);
 
   const toggleContactCreator = useCallback(() => {
     setCreatorOpened((v) => !v);
@@ -36,6 +44,9 @@ export function ContactBook() {
       >
         <AddIcon />
       </Fab>
+      <IconButton onClick={signOut} className={classes.logoutButton}>
+        <ExitToAppIcon />
+      </IconButton>
     </>
   );
 }
