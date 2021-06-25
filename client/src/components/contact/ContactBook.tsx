@@ -1,11 +1,8 @@
-import { Box, Fab, makeStyles, Modal } from '@material-ui/core';
-import React from 'react';
-import { ContactsList } from './ContactsList';
+import { Fab, makeStyles, Modal } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
-import { useCallback } from 'react';
-import { useState } from 'react';
-import { ContactEdit } from './ContactEdit';
+import React, { useCallback, useState } from 'react';
 import { ContactCreator } from './ContactCreator';
+import { ContactsList } from './ContactsList';
 
 const useStyles = makeStyles({
   fab: {
@@ -27,7 +24,7 @@ export function ContactBook() {
     <>
       <ContactsList />
       <Modal open={creatorOpened} onClose={toggleContactCreator}>
-        <ContactCreator />
+        <ContactCreator close={toggleContactCreator} />
       </Modal>
       <Fab
         color="primary"

@@ -7,6 +7,7 @@ interface IAppContext {
   httpClient: HttpClient;
   loggedIn: boolean;
   contacts: IContact[];
+  setContacts(contacts: IContact[]): void;
 }
 
 interface IAppContextProps {
@@ -18,6 +19,7 @@ const defaultValue: IAppContext = {
   httpClient: new HttpClient('', ''),
   loggedIn: false,
   contacts: [],
+  setContacts: (contacts: IContact[]) => void 0,
 };
 
 export const appContext = createContext<IAppContext>(defaultValue);
@@ -33,7 +35,7 @@ export function AppContextProvider({ children }: IAppContextProps) {
 
   const signIn = useCallback(
     (data: IAuthResponse, credentials: ISignInRequest) => {
-      // setContacts(data.contacts);
+      setContacts(data.contacts);
       setMe(data.user);
 
       const { email, password } = credentials;
@@ -44,7 +46,13 @@ export function AppContextProvider({ children }: IAppContextProps) {
 
   return (
     <Provider
-      value={{ signIn, httpClient, loggedIn: me !== undefined, contacts }}
+      value={{
+        signIn,
+        httpClient,
+        loggedIn: me !== undefined,
+        contacts,
+        setContacts,
+      }}
     >
       {children}
     </Provider>

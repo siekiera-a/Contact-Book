@@ -23,3 +23,9 @@ export interface IContact {
   email: string | null;
   phone: string | null;
 }
+
+export interface IContactRequest {
+  name: string;
+  email?: string;
+  phone?: string;
+}

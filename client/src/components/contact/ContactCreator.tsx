@@ -1,6 +1,7 @@
-import { Typography } from '@material-ui/core';
-import { Box, Button, makeStyles, Paper } from '@material-ui/core';
-import React, { useRef } from 'react';
+import { Button, makeStyles, Paper, Typography } from '@material-ui/core';
+import React, { useCallback, useContext, useRef } from 'react';
+import { addContactApi } from '../../api/contact';
+import { appContext } from '../../AppContext';
 import { ContactEdit } from './ContactEdit';
 
 const useStyles = makeStyles({
@@ -37,12 +38,45 @@ interface IProps {
   close(): void;
 }
 
-export function ContactCreator() {
+export function ContactCreator({ close }: IProps) {
   const nameRef = useRef<HTMLInputElement>();
   const emailRef = useRef<HTMLInputElement>();
   const phoneRef = useRef<HTMLInputElement>();
 
   const classes = useStyles();
+
+  const { httpClient, setContacts } = useContext(appContext);
+
+  const addContact = useCallback(() => {
+    const name = (nameRef.current?.value || '').trim();
+    const email = (emailRef.current?.value || '').trim();
+    const phone = (phoneRef.current?.value || '').trim();
+
+    if (name === '' || (email === '' && phone === '')) {
+      return;
+    }
+
+    addContactApi(httpClient, {
+      name,
+      email: email !== '' ? email : undefined,
+      phone: phone !== '' ? phone : undefined,
+    })
+      .then((x) => {
+        setContacts(x);
+        close();
+
+        if (nameRef.current) {
+          nameRef.current.value = '';
+        }
+        if (emailRef.current) {
+          emailRef.current.value = '';
+        }
+        if (phoneRef.current) {
+          phoneRef.current.value = '';
+        }
+      })
+      .catch((e) => alert(e));
+  }, [httpClient, close, setContacts]);
 
   return (
     <Paper className={classes.paper}>
@@ -55,7 +89,12 @@ export function ContactCreator() {
         phoneRef={phoneRef}
         className={classes.info}
       />
-      <Button variant="contained" className={classes.button} color="primary">
+      <Button
+        variant="contained"
+        className={classes.button}
+        color="primary"
+        onClick={addContact}
+      >
         Add
       </Button>
     </Paper>

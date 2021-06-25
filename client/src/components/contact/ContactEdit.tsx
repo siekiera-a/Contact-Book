@@ -1,7 +1,5 @@
 import { Box, FormControl, makeStyles, TextField } from '@material-ui/core';
-import React, { useState } from 'react';
-import { useCallback } from 'react';
-import { useRef } from 'react';
+import React, { useCallback, useState } from 'react';
 
 const useStyles = makeStyles({
   formControl: {
