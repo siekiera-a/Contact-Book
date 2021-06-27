@@ -118,6 +118,7 @@ public class ContactServiceImpl implements ContactService {
             .collect(Collectors.toList());
 
         entities.forEach(user::addContact);
+        contactRepository.saveAll(entities);
         userRepository.save(user);
 
         return entities.size();
