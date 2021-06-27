@@ -1,5 +1,10 @@
 import { HttpClient } from './client';
-import { IContact, IContactRequest, ISuccessResponse } from './types';
+import {
+  IContact,
+  IContactRequest,
+  IImportResponse,
+  ISuccessResponse,
+} from './types';
 
 export const addContactApi = async (
   httpClient: HttpClient,
@@ -21,4 +26,11 @@ export const editContactApi = async (
   id: number
 ): Promise<ISuccessResponse> => {
   return httpClient.put(`/contact/${id}`, contact);
+};
+
+export const importContactsApi = async (
+  httpClient: HttpClient,
+  contacts: IContactRequest[]
+): Promise<IImportResponse> => {
+  return httpClient.post('/contact/upload', contacts);
 };

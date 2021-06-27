@@ -33,3 +33,9 @@ export interface IContactRequest {
 export interface ISuccessResponse {
   success: boolean;
 }
+
+export interface IImportResponse {
+  total: number;
+  imported: number;
+  contacts: IContact[];
+}
