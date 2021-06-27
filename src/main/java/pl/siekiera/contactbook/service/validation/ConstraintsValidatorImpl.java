@@ -29,6 +29,6 @@ public class ConstraintsValidatorImpl implements ConstraintsValidator{
             return false;
         }
 
-        return name.length() > 3;
+        return name.length() > 2;
     }
 }

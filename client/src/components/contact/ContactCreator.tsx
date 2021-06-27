@@ -58,7 +58,13 @@ export function ContactCreator({ close }: IProps) {
     const email = (emailRef.current?.value || '').trim();
     const phone = (phoneRef.current?.value || '').trim();
 
-    if (name === '' || (email === '' && phone === '')) {
+    if (email === '' && phone === '') {
+      setMessage('Fill email or phone number!');
+      return;
+    }
+
+    if (name.length < 3) {
+      setMessage('Name must have at least 3 chars');
       return;
     }
 
@@ -67,7 +73,7 @@ export function ContactCreator({ close }: IProps) {
     addContactApi(httpClient, {
       name,
       email: email !== '' ? email : undefined,
-      phone: phone !== '' ? phone : undefined,
+      phone: phone !== '' ? phone.replace(' ', '') : undefined,
     })
       .then((x) => {
         setContacts(x);
