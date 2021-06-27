@@ -4,15 +4,18 @@ import {
   Button,
   Fab,
   IconButton,
+  Input,
   makeStyles,
   Modal,
   Toolbar,
 } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
-import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import React, { useCallback, useContext, useState } from 'react';
+import { importContactsApi } from '../../api/contact';
+import { IContactRequest } from '../../api/types';
 import { appContext } from '../../AppContext';
 import { ContactCreator } from './ContactCreator';
 import { ContactsList } from './ContactsList';
@@ -39,12 +42,15 @@ const useStyles = makeStyles((theme) => ({
   white: {
     color: white,
   },
+  input: {
+    display: 'none',
+  },
 }));
 
 export function ContactBook() {
   const classes = useStyles();
   const [creatorOpened, setCreatorOpened] = useState(false);
-  const { signOut, contacts } = useContext(appContext);
+  const { signOut, contacts, setContacts, httpClient } = useContext(appContext);
 
   const toggleContactCreator = useCallback(() => {
     setCreatorOpened((v) => !v);
@@ -53,15 +59,47 @@ export function ContactBook() {
   const exportContacts = useCallback(() => {
     if (contacts.length > 0) {
       const link = document.createElement('a');
-      const blob = new Blob([JSON.stringify(contacts)], { type: 'text/plain' });
+      const blob = new Blob(
+        [
+          JSON.stringify(
+            contacts.map((c) => {
+              const { name, phone, email } = c;
+              return { name, phone, email };
+            })
+          ),
+        ],
+        { type: 'text/plain' }
+      );
       const url = URL.createObjectURL(blob);
       link.href = url;
-      link.download = 'contacts.json';
+      link.download = Date.now().toLocaleString() + '-contacts.json';
       link.click();
     } else {
       alert('No contacts to export!');
     }
   }, [contacts]);
+
+  const importContacts = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const fileReader = new FileReader();
+      const files = e.target.files;
+      if (files) {
+        fileReader.onload = (e) => {
+          const data = e.target?.result;
+          if (typeof data === 'string') {
+            const contacts: IContactRequest[] = JSON.parse(data);
+            importContactsApi(httpClient, contacts)
+              .then((x) => {
+                setContacts(x.contacts);
+              })
+              .catch(() => console.log(e));
+          }
+        };
+        fileReader.readAsText(files[0], 'text/plain');
+      }
+    },
+    [httpClient, setContacts]
+  );
 
   return (
     <>
@@ -71,7 +109,15 @@ export function ContactBook() {
             startIcon={<CloudUploadIcon htmlColor={white} />}
             className={[classes.button, classes.white].join(' ')}
           >
-            Import
+            <label>
+              Import
+              <Input
+                type="file"
+                name="file"
+                onChange={importContacts}
+                className={classes.input}
+              />
+            </label>
           </Button>
           <Button
             startIcon={<CloudDownloadIcon htmlColor={white} />}
