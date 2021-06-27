@@ -52,16 +52,16 @@ public class ContactController {
     @DeleteMapping("/{id}")
     public ResponseEntity<SuccessResponse> deleteContact(@PathVariable Long id) {
         User user = authenticationService.getCurrentUser();
-        return new ResponseEntity<>(new SuccessResponse(contactService.deleteContact(user, id)),
+        return new ResponseEntity<>(contactService.deleteContact(user, id),
             HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<SuccessResponse> updateContact(@Valid @RequestBody ContactRequest contact, @PathVariable Long id) {
         User user = authenticationService.getCurrentUser();
-        boolean success = contactService.updateContact(user, id, contact.getName(),
+        SuccessResponse response = contactService.updateContact(user, id, contact.getName(),
             contact.getEmail(), contact.getPhone());
-        return new ResponseEntity<>(new SuccessResponse(success), HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/upload")

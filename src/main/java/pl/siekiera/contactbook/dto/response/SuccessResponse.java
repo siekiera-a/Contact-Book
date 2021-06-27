@@ -6,5 +6,6 @@ import lombok.Value;
 public class SuccessResponse {
 
     boolean success;
+    String message;
 
 }

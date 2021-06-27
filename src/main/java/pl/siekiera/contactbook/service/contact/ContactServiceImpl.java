@@ -3,6 +3,7 @@ package pl.siekiera.contactbook.service.contact;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.siekiera.contactbook.dto.request.ContactRequest;
+import pl.siekiera.contactbook.dto.response.SuccessResponse;
 import pl.siekiera.contactbook.entity.Contact;
 import pl.siekiera.contactbook.entity.User;
 import pl.siekiera.contactbook.model.ContactModel;
@@ -52,11 +53,11 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     @Transactional
-    public boolean deleteContact(User user, Long contactId) {
+    public SuccessResponse deleteContact(User user, Long contactId) {
         Optional<Contact> contactOptional = contactRepository.findById(contactId);
 
         if (contactOptional.isEmpty()) {
-            return false;
+            return new SuccessResponse(false, "Contact not found!");
         }
 
         Contact contact = contactOptional.get();
@@ -64,44 +65,54 @@ public class ContactServiceImpl implements ContactService {
             contactRepository.delete(contact);
             user.deleteContact(contact);
             userRepository.save(user);
-            return true;
+            return new SuccessResponse(true, "Deleted contact with id " + contactId);
         }
 
-        return false;
+        return new SuccessResponse(false, "You are not the owner of contact!");
     }
 
     @Override
     @Transactional
-    public boolean updateContact(User user, Long id, String name, String email, String phone) {
-        if (!constraintsValidator.validEmail(email) &&
-            !constraintsValidator.validPhoneNumber(phone) ||
-            !constraintsValidator.validName(name)) {
-            return false;
+    public SuccessResponse updateContact(User user, Long id, String name, String email,
+                                         String phone) {
+        if (!constraintsValidator.validName(name)) {
+            return new SuccessResponse(false, "Invalid contact name!");
         }
 
+        if (email == null && phone == null) {
+            return new SuccessResponse(false, "Email or phone number must be specified!");
+        }
+
+        if (email != null && !constraintsValidator.validEmail(email)) {
+            return new SuccessResponse(false, "Invalid email!");
+        }
+
+        if (phone != null && !constraintsValidator.validPhoneNumber(phone)) {
+            return new SuccessResponse(false, "Invalid phone number!");
+        }
 
         Optional<Contact> optionalContact = contactRepository.findById(id);
 
         if (optionalContact.isEmpty()) {
-            return false;
+            return new SuccessResponse(false, "Contact not found!");
         }
 
         Contact contact = optionalContact.get();
 
         if (!user.equals(contact.getUser())) {
-            return false;
+            return new SuccessResponse(false, "You are not the owner of contact!");
         }
 
         if (!contact.getName().equals(name) && contactRepository.existsContactByNameAndUser(name,
             user)) {
-            return false;
+            return new SuccessResponse(false, "Contact with that name already exists!");
         }
 
         contact.setEmail(email);
         contact.setPhone(phone);
         contact.setName(name);
         contactRepository.save(contact);
-        return true;
+        return new SuccessResponse(true, "Updated!");
     }
 
     @Override
