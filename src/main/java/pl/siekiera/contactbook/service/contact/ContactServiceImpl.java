@@ -25,7 +25,7 @@ public class ContactServiceImpl implements ContactService {
     @Override
     @Transactional
     public boolean add(User user, String name, String email, String phone) {
-        if (!constraintsValidator.validEmail(email) ||
+        if (!constraintsValidator.validEmail(email) &&
             !constraintsValidator.validPhoneNumber(phone) ||
             !constraintsValidator.validName(name)) {
             return false;
@@ -72,7 +72,7 @@ public class ContactServiceImpl implements ContactService {
     @Override
     @Transactional
     public boolean updateContact(User user, Long id, String name, String email, String phone) {
-        if (!constraintsValidator.validEmail(email) ||
+        if (!constraintsValidator.validEmail(email) &&
             !constraintsValidator.validPhoneNumber(phone) ||
             !constraintsValidator.validName(name)) {
             return false;
@@ -91,7 +91,7 @@ public class ContactServiceImpl implements ContactService {
             return false;
         }
 
-        if (contactRepository.existsContactByNameAndUser(name, user)) {
+        if (!contact.getName().equals(name) && contactRepository.existsContactByNameAndUser(name, user)) {
             return false;
         }
 
