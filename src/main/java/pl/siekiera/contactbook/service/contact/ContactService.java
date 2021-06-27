@@ -1,5 +1,6 @@
 package pl.siekiera.contactbook.service.contact;
 
+import pl.siekiera.contactbook.dto.request.ContactRequest;
 import pl.siekiera.contactbook.entity.User;
 import pl.siekiera.contactbook.model.ContactModel;
 
@@ -14,5 +15,7 @@ public interface ContactService {
     boolean deleteContact(User user, Long contactId);
 
     boolean updateContact(User user, Long id, String name, String email, String phone);
+
+    int importContacts(User user, List<ContactRequest> contacts);
 
 }

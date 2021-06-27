@@ -2,6 +2,7 @@ package pl.siekiera.contactbook.service.contact;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import pl.siekiera.contactbook.dto.request.ContactRequest;
 import pl.siekiera.contactbook.entity.Contact;
 import pl.siekiera.contactbook.entity.User;
 import pl.siekiera.contactbook.model.ContactModel;
@@ -91,7 +92,8 @@ public class ContactServiceImpl implements ContactService {
             return false;
         }
 
-        if (!contact.getName().equals(name) && contactRepository.existsContactByNameAndUser(name, user)) {
+        if (!contact.getName().equals(name) && contactRepository.existsContactByNameAndUser(name,
+            user)) {
             return false;
         }
 
@@ -102,5 +104,23 @@ public class ContactServiceImpl implements ContactService {
         return true;
     }
 
+    @Override
+    @Transactional
+    public int importContacts(User user, List<ContactRequest> contacts) {
+        List<String> contactsNames =
+            user.getContacts().stream()
+                .map(Contact::getName)
+                .collect(Collectors.toList());
+
+        List<Contact> entities = contacts.stream()
+            .filter(c -> !contactsNames.contains(c.getName()))
+            .map(c -> new Contact(c.getName(), c.getEmail(), c.getPhone()))
+            .collect(Collectors.toList());
+
+        entities.forEach(user::addContact);
+        userRepository.save(user);
+
+        return entities.size();
+    }
 
 }

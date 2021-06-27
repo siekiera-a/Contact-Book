@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import pl.siekiera.contactbook.dto.request.ContactRequest;
+import pl.siekiera.contactbook.dto.response.ImportResponse;
 import pl.siekiera.contactbook.dto.response.SuccessResponse;
 import pl.siekiera.contactbook.entity.User;
 import pl.siekiera.contactbook.model.ContactModel;
@@ -21,6 +22,7 @@ import pl.siekiera.contactbook.service.contact.ContactService;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/contact")
@@ -60,6 +62,18 @@ public class ContactController {
         boolean success = contactService.updateContact(user, id, contact.getName(),
             contact.getEmail(), contact.getPhone());
         return new ResponseEntity<>(new SuccessResponse(success), HttpStatus.OK);
+    }
+
+    @PostMapping("/upload")
+    public ResponseEntity<ImportResponse> upload(@Valid @RequestBody List<ContactRequest> contacts) {
+        User user = authenticationService.getCurrentUser();
+        int imported = contactService.importContacts(user, contacts);
+        List<ContactModel> userContacts = user.getContacts().stream()
+            .map(ContactModel::new)
+            .collect(Collectors.toList());
+
+        return new ResponseEntity<>(new ImportResponse(userContacts, imported,
+            contacts.size()), HttpStatus.OK);
     }
 
 }
