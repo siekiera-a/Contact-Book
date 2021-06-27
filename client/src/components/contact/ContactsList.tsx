@@ -24,7 +24,9 @@ export function ContactsList() {
   return (
     <Container maxWidth="lg" className={classes.container}>
       {contacts.length > 0 ? (
-        contacts.map((c) => <Contact key={c.id} {...c} />)
+        contacts
+          .sort((c1, c2) => c1.name.localeCompare(c2.name))
+          .map((c) => <Contact key={c.id} {...c} />)
       ) : (
         <Typography align="center" variant="h4" className={classes.text}>
           No contacts
