@@ -54,6 +54,9 @@ const useStyles = makeStyles((theme) => ({
   title: {
     fontWeight: 'bold',
   },
+  errorMessage: {
+    flex: 1,
+  },
 }));
 
 export function Contact({ id, name, phone, email }: IContact) {
@@ -61,6 +64,7 @@ export function Contact({ id, name, phone, email }: IContact) {
   const upperCaseName = name.toUpperCase();
   const [editable, setEditable] = useState(false);
   const { httpClient, deleteContact, updateContact } = useContext(appContext);
+  const [message, setMessage] = useState<string>();
 
   let avatarTitle = '';
   const words = upperCaseName.split(' ');
@@ -85,17 +89,34 @@ export function Contact({ id, name, phone, email }: IContact) {
     const email = emailRef.current?.value || '';
     const phone = phoneRef.current?.value || '';
 
-    if (name === '' || (email === '' && phone === '')) {
+    if (email === '' && phone === '') {
+      setMessage('Fill email or phone number!');
       return;
     }
 
-    editContactApi(httpClient, { name, email, phone }, id).then((x) => {
+    if (name.length < 3) {
+      setMessage('Name must have at least 3 chars');
+      return;
+    }
+
+    editContactApi(
+      httpClient,
+      {
+        name,
+        email: email !== '' ? email : undefined,
+        phone: phone !== '' ? phone.replace(' ', '') : undefined,
+      },
+      id
+    ).then((x) => {
       if (x.success) {
         updateContact({ name, email, phone, id });
         setEditable(false);
+        setMessage(undefined);
+      } else {
+        setMessage(x.message);
       }
     });
-  }, [id, httpClient, setEditable, updateContact]);
+  }, [id, httpClient, setEditable, updateContact, setMessage]);
 
   const removeContact = useCallback(() => {
     deleteContactApi(httpClient, id).then((x) => {
@@ -133,6 +154,15 @@ export function Contact({ id, name, phone, email }: IContact) {
         )}
 
         <Box className={[classes.actionBar].join(' ')}>
+          {message && (
+            <Typography
+              color="error"
+              align="left"
+              className={classes.errorMessage}
+            >
+              {message}
+            </Typography>
+          )}
           <IconButton onClick={toggleEditing}>
             {editable ? <CloseIcon /> : <EditIcon />}
           </IconButton>

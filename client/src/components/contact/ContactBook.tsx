@@ -7,12 +7,14 @@ import {
   Input,
   makeStyles,
   Modal,
+  Snackbar,
   Toolbar,
 } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import { Alert } from '@material-ui/lab';
 import React, { useCallback, useContext, useState } from 'react';
 import { importContactsApi } from '../../api/contact';
 import { IContactRequest } from '../../api/types';
@@ -51,6 +53,7 @@ export function ContactBook() {
   const classes = useStyles();
   const [creatorOpened, setCreatorOpened] = useState(false);
   const { signOut, contacts, setContacts, httpClient } = useContext(appContext);
+  const [message, setMessage] = useState<string>();
 
   const toggleContactCreator = useCallback(() => {
     setCreatorOpened((v) => !v);
@@ -89,17 +92,22 @@ export function ContactBook() {
           if (typeof data === 'string') {
             const contacts: IContactRequest[] = JSON.parse(data);
             importContactsApi(httpClient, contacts)
-              .then((x) => {
-                setContacts(x.contacts);
+              .then(({ contacts, total, imported }) => {
+                setContacts(contacts);
+                setMessage(`${imported}/${total} contacts imported!`);
               })
-              .catch(() => console.log(e));
+              .catch(() => setMessage('Import failed!'));
           }
         };
         fileReader.readAsText(files[0], 'text/plain');
       }
     },
-    [httpClient, setContacts]
+    [httpClient, setContacts, setMessage]
   );
+
+  const closeAlert = useCallback(() => {
+    setMessage(undefined);
+  }, [setMessage]);
 
   return (
     <>
@@ -146,6 +154,11 @@ export function ContactBook() {
       >
         <AddIcon />
       </Fab>
+      <Snackbar open={!!message} autoHideDuration={4000} onClose={closeAlert}>
+        <Alert variant="filled" severity="success">
+          {message}
+        </Alert>
+      </Snackbar>
     </>
   );
 }

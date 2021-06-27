@@ -32,6 +32,7 @@ export interface IContactRequest {
 
 export interface ISuccessResponse {
   success: boolean;
+  message: string;
 }
 
 export interface IImportResponse {
