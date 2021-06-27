@@ -73,7 +73,7 @@ export function ContactCreator({ close }: IProps) {
     addContactApi(httpClient, {
       name,
       email: email !== '' ? email : undefined,
-      phone: phone !== '' ? phone.replace(' ', '') : undefined,
+      phone: phone !== '' ? phone.replaceAll(' ', '') : undefined,
     })
       .then((x) => {
         setContacts(x);

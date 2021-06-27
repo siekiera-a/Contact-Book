@@ -104,7 +104,7 @@ export function Contact({ id, name, phone, email }: IContact) {
       {
         name,
         email: email !== '' ? email : undefined,
-        phone: phone !== '' ? phone.replace(' ', '') : undefined,
+        phone: phone !== '' ? phone.replaceAll(' ', '') : undefined,
       },
       id
     ).then((x) => {
