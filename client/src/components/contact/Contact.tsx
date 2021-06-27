@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
   avatar: {
     width: '60px',
     height: '60px',
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.error.dark,
   },
   avatarContainer: {
     padding: '0 15px',

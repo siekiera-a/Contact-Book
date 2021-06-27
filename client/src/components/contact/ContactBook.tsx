@@ -72,7 +72,7 @@ export function ContactBook() {
       );
       const url = URL.createObjectURL(blob);
       link.href = url;
-      link.download = Date.now().toLocaleString() + '-contacts.json';
+      link.download = new Date().toLocaleDateString() + '-contacts.json';
       link.click();
     } else {
       alert('No contacts to export!');
