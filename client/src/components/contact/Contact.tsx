@@ -106,7 +106,7 @@ export function Contact({ id, name, phone, email }: IContact) {
   }, [id, httpClient, deleteContact]);
 
   return (
-    <Paper className={classes.container}>
+    <Paper className={classes.container} elevation={7}>
       <Box className={classes.avatarContainer}>
         <Avatar className={classes.avatar}>{avatarTitle}</Avatar>
       </Box>

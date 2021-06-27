@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 import { Register } from './Register';
 import { Login } from './Login';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   boxContainer: {
     width: '100vw',
     height: '100vh',
@@ -22,6 +22,12 @@ const useStyles = makeStyles({
     borderRadius: '5px',
     overflow: 'hidden',
     boxShadow: '0 0 20px 0px #555',
+    [theme.breakpoints.down('sm')]: {
+      flexDirection: 'column-reverse',
+      width: '100%',
+      minHeight: '100vh',
+      borderRadius: '0',
+    },
   },
   box: {
     flex: 1,
@@ -51,9 +57,13 @@ const useStyles = makeStyles({
     backgroundColor: '#3f37c9',
     display: 'flex',
   },
-
   image: {
-    width: '70%',
+    width: '280px',
+    height: '280px',
+    [theme.breakpoints.down('sm')]: {
+      width: '130px',
+      height: '130px',
+    },
     margin: 'auto',
     display: 'block',
     animation: '$growAnimation 2s linear infinite alternate',
@@ -66,7 +76,7 @@ const useStyles = makeStyles({
       transform: 'scale(1.2)',
     },
   },
-});
+}));
 
 export function AuthView() {
   const classes = useStyles();

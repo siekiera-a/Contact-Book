@@ -10,7 +10,7 @@ const useStyles = makeStyles({
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    margin: '25px auto',
+    margin: '30px auto 70px auto',
   },
   text: {
     margin: 'auto',
